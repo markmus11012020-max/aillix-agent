@@ -438,7 +438,25 @@ fi
 
 ## 11. Kaiten
 
-1. Создайте доску и колонки:
+1. Возьмите API-токен:
+   - Kaiten → профиль → API key;
+   - или `https://aillix.kaiten.ru/profile/api-key`;
+   - вставьте в `agent/.env` как `KAITEN_API_TOKEN`, не в чат.
+
+2. Определите ID доски:
+
+```bash
+cd /opt/aillix-agent
+npm run discover:kaiten
+```
+
+Скрипт покажет `BOARD_ID`, колонки и дорожки. Впишите ID в `.env`:
+
+```env
+KAITEN_BOARD_ID=<id>
+```
+
+3. Создайте доску и колонки:
 
 ```text
 00 Inbox
@@ -457,7 +475,7 @@ fi
 Questions
 ```
 
-2. Проверьте доступ:
+4. Проверьте доступ:
 
 ```bash
 cd /opt/aillix-agent
@@ -465,7 +483,7 @@ npm run seed
 npm run smoke
 ```
 
-3. Если колонок не хватает, `seed` покажет список. Создайте их в Kaiten.
+5. Если колонок не хватает, `seed` покажет список. Создайте их в Kaiten.
 
 4. Если Kaiten недоступен:
 

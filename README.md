@@ -433,6 +433,7 @@ OpenCode
 | Переменная | Назначение |
 |---|---|
 | `KAITEN_API_URL` | `https://<domain>.kaiten.ru/api/latest` |
+| `KAITEN_SPACE_ID` | ID пространства, для Aillix — `942277` |
 | `KAITEN_API_TOKEN` | bearer-токен |
 | `KAITEN_BOARD_ID` | ID доски |
 | `KAITEN_READ_ONLY` | `1` — только чтение |
