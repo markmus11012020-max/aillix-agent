@@ -41,6 +41,7 @@ fi
 
 echo "Сборка..."
 npm run build
+
 if ! command -v opencode >/dev/null 2>&1; then
   echo "OpenCode не найден. Установите: curl -fsSL https://opencode.ai/v2/install | bash" >&2
   exit 1

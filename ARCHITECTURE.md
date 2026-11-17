@@ -10,8 +10,9 @@ OpenCode
   │   ├── HITL / permissions
   │   ├── Kaiten / local board
   │   └── Console HTTP server
-  ├── MCP server (TypeScript)
-  │   └── kaiten_* tools
+  ├── MCP servers
+  │   ├── kaiten (local)
+  │   └── t-invest (remote sandbox)
   ├── agents
   │   ├── hackathon
   │   ├── hackathon-captain
@@ -69,7 +70,18 @@ OpenCode
 - `11 HITL` — человек.
 - `12 Done` — только после человека.
 
-## 6. Console
+## 6. T-Invest MCP
+
+- Remote Streamable HTTP.
+- Sandbox: `https://sandbox-invest-public-api.tbank.ru/mcp`.
+- Auth: `Authorization: Bearer <T_INVEST_TOKEN>`.
+- Token: read-only, sandbox.
+- Сертификаты Минцифры: `Russian_Trusted_Root_CA`, `Russian_Trusted_Sub_CA`.
+- `start.sh` выставляет `NODE_EXTRA_CA_CERTS` и `SSL_CERT_FILE`.
+- Проверка: `npm run smoke:tinvest`, затем `/mcps`.
+- Торговые права не используются.
+
+## 7. Console
 
 - HTTP-сервер в плагине.
 - `GET /api/state` — состояние, пульт, доска, карточка.
@@ -82,7 +94,7 @@ OpenCode
 - `POST /api/sync` — синхронизация.
 - Только `127.0.0.1`, опциональный `UI_TOKEN`.
 
-## 7. Хранилище
+## 8. Хранилище
 
 ```text
 state/
@@ -97,11 +109,14 @@ card/
   CARD.md
 ```
 
-## 8. Безопасность
+## 9. Безопасность
 
-- токен Kaiten только в `.env`;
+- токен Kaiten и T-Invest только в `.env`;
+- T-Invest token read-only, sandbox;
+- сертификаты Минцифры установлены;
 - Console только локально;
 - удаление карточек запрещено;
 - HITL и отправка — только человек;
 - shell запрещён;
-- `.env` запрещён для записи агентом.
+- `.env` запрещён для записи агентом;
+- только локальный контур.

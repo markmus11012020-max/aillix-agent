@@ -2,12 +2,16 @@
 
 Aillix Agent — очный агент для второго этапа. Управляет процессом, артефактами и доской, но не пишет продуктовый код и не принимает решения за капитана. Текущая версия: 1.0.
 
+Репозиторий агента: `https://github.com/markmus11012020-max/aillix-agent` (Private).
+Рабочий репозиторий хакатона — отдельный аккаунт, без кода агента.
+
 ## 1. Что входит
 
 | Модуль | Назначение |
 |---|---|
 | OpenCode plugin | 11 инструментов, состояние, HITL, синхронизация, Console |
 | Kaiten MCP | 8 инструментов для карточек, колонок и комментариев |
+| T-Invest MCP | remote sandbox, read-only, сертификаты Минцифры |
 | Aillix Console | локальный веб-пульт на `127.0.0.1:8787` |
 | State machine | 11 шагов, гейты, артефакты, время |
 | Агенты | orchestrator, captain, developer, reviewer |
@@ -68,6 +72,14 @@ opencode
 ```
 
 Подробный Linux-план: `LINUX.md`.
+
+### T-Invest MCP
+
+- URL: `https://sandbox-invest-public-api.tbank.ru/mcp`.
+- Токен: read-only, из личного кабинета Т-Инвестиций.
+- Сертификаты Минцифры: `Russian_Trusted_Root_CA` и `Russian_Trusted_Sub_CA`.
+- Проверка: `npm run smoke:tinvest`.
+- В OpenCode: `/mcps` — `t-invest` должен быть `connected`.
 
 ## 4. Архитектура
 
@@ -424,6 +436,10 @@ OpenCode
 | `KAITEN_API_TOKEN` | bearer-токен |
 | `KAITEN_BOARD_ID` | ID доски |
 | `KAITEN_READ_ONLY` | `1` — только чтение |
+| `T_INVEST_MCP_URL` | `https://sandbox-invest-public-api.tbank.ru/mcp` |
+| `T_INVEST_TOKEN` | read-only токен T-Invest |
+| `T_INVEST_READ_ONLY` | `1` — только чтение |
+| `T_INVEST_CA_BUNDLE` | путь к `russian-trusted.pem`, если не `~/certs` |
 | `BOARD_BACKEND` | `kaiten` или `local` |
 | `HACKATHON_START` | время старта |
 | `HACKATHON_DEADLINE` | 22:00 |
@@ -485,7 +501,7 @@ agent/
 
 | Симптом | Что делать |
 |---|---|
-| MCP not connected | проверить `opencode mcp list`, путь к `dist/mcp/server.js` |
+| MCP not connected | `/mcps`, путь к `dist/mcp/server.js` |
 | 401 Kaiten | проверить токен |
 | 403 Kaiten | проверить права токена |
 | 404 Kaiten | проверить `KAITEN_BOARD_ID` и колонки |

@@ -21,7 +21,7 @@
 - OpenCode Go подключается один раз на ноутбуке.
 - T-Invest MCP — sandbox и read-only токен.
 - Без интернета работают state, Console и локальная доска.
-- VPS и удалённый сервер не используются.
+- Всё работает на ноутбуке.
 
 ## 1. Ноутбук
 
@@ -49,7 +49,7 @@ node --version
 npm --version
 ```
 
-5. Установите VS Code. Remote-SSH не нужен: всё локально.
+5. Установите VS Code. Всё локально.
 
 ## 2. Разделение каталогов
 
@@ -201,13 +201,8 @@ npm run smoke:tinvest
 
 Если 401/403 — токен или права. Если TLS-ошибка — сертификаты.
 
-После запуска OpenCode:
-
-```text
-opencode mcp list
-```
-
-Должны быть `kaiten` и `t-invest` в статусе `connected`.
+После запуска OpenCode откройте `/mcps` и проверьте `kaiten` и `t-invest`.
+Если CLI показывает пусто, ориентируйтесь на `/mcps` в TUI.
 
 ## 7. Подключение OpenCode Go
 
@@ -293,8 +288,12 @@ dist/
 
 | Что | Аккаунт | Репозиторий |
 |---|---|---|
-| Aillix Agent | личный | приватный `aillix-agent` |
+| Aillix Agent | личный `markmus11012020-max` | `aillix-agent` |
 | Работа хакатона | хакатонный | отдельный `work` |
+
+Репозиторий агента: `https://github.com/markmus11012020-max/aillix-agent`.
+
+Репозиторий должен быть **Private**. В Work не должно быть кода агента.
 
 ### 10.1. Два SSH-ключа
 
@@ -376,8 +375,15 @@ git config --show-origin --get user.email
 
 ### 10.3. Пуш агента
 
-1. Создайте **приватный** репозиторий `aillix-agent` в личном аккаунте.
-2. На ноутбуке:
+Репозиторий уже создан: `https://github.com/markmus11012020-max/aillix-agent`.
+
+На Linux-ноутбуке проще клонировать его по SSH:
+
+```bash
+git clone git@github-agent:markmus11012020-max/aillix-agent.git /opt/aillix-agent
+```
+
+Если каталог уже существует и это не git-репозиторий:
 
 ```bash
 cd /opt/aillix-agent
@@ -391,9 +397,15 @@ git status --short
 ```bash
 git commit -m "feat: Aillix Agent v1.0"
 git branch -M main
-git remote add origin git@github-agent:<personal>/aillix-agent.git
+git remote add origin git@github-agent:markmus11012020-max/aillix-agent.git
 git remote -v
 git push -u origin main
+```
+
+Если репозиторий уже склонирован по HTTPS, переключите remote на SSH:
+
+```bash
+git remote set-url origin git@github-agent:markmus11012020-max/aillix-agent.git
 ```
 
 ### 10.4. Пуш Работы
@@ -484,7 +496,7 @@ export BOARD_BACKEND=local
 - T-Invest token — read-only, sandbox.
 - После хакатона отозвать Kaiten-токен, T-Invest-токен и ротировать OpenCode Go key.
 - При необходимости удалить `/opt/aillix-agent` и затереть свободное место.
-- VPS и удалённый сервер не используются.
+- Всё работает на ноутбуке.
 
 ## 14. Офлайн-режим
 
@@ -522,7 +534,7 @@ export BOARD_BACKEND=local
 - [ ] Тесты: `npm test`.
 - [ ] `.env` заполнен, `chmod 600`.
 - [ ] `./start.sh` запускается.
-- [ ] `opencode mcp list` — `kaiten` и `t-invest`.
+- [ ] `/mcps` — `kaiten` и `t-invest`.
 - [ ] Console открывается на 8787.
 - [ ] `hackathon_status` работает.
 - [ ] Kaiten или `KANBAN.md` работает.
@@ -540,7 +552,7 @@ export BOARD_BACKEND=local
 | `/connect` не показывает OpenCode Go | Проверить подписку и API key в console |
 | `Model unavailable` | `/models`, выбрать доступную модель |
 | `t-invest` не подключён | Проверить `T_INVEST_MCP_URL`, токен, сертификаты |
-| MCP not connected | `opencode mcp list`, проверить `dist/mcp/server.js` |
+| MCP not connected | `/mcps`, проверить `dist/mcp/server.js` |
 | Плагин не загрузился | Проверить `.opencode/plugins/aillix.js` и `npm run build` |
 | 401 Kaiten | Проверить `KAITEN_API_TOKEN` |
 | 403 Kaiten | Проверить права токена |

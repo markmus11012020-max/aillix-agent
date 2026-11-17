@@ -29,10 +29,14 @@ npm test
 Проверить:
 
 - `node dist/mcp/server.js` запускается без ошибок;
-- `opencode mcp list` показывает Kaiten;
+- `/mcps` показывает Kaiten и T-Invest;
 - Console открывается на `http://127.0.0.1:8787`;
-- токен не попал в Git и логи.
-- OpenCode Go подключён: `/connect` → API key → `/models`.
+- токен не попал в Git и логи;
+- OpenCode Go подключён: `/connect` → API key → `/models`;
+- сертификаты Минцифры установлены;
+- `npm run smoke:tinvest` проходит TLS и токен;
+- `ssh -T git@github-agent` и `ssh -T git@github-hack` отвечают;
+- `git remote -v` в агенте и Work указывает на разные аккаунты.
 
 ## 2. Утро 21.11
 

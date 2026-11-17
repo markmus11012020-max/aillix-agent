@@ -14,3 +14,6 @@
 - Тесты и документация.
 - Linux-план `LINUX.md` и запуск `start.sh`.
 - OpenCode Go: `/connect` → API key → `/models`.
+- T-Invest MCP: remote sandbox, read-only, сертификаты Минцифры.
+- GitHub: агент и Работа на разных аккаунтах, разные SSH-ключи.
+- Только локальный контур.
