@@ -77,6 +77,8 @@ opencode
 
 Подробный Linux-план: `LINUX.md`.
 
+Тестовый день 19.11: `TEST_DAY.md` — роли, тайминг, чек-листы и метрики.
+
 ### Kaiten
 
 - `npm run discover:kaiten` — показать доски, колонки и дорожки.

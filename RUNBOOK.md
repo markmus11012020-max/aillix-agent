@@ -46,6 +46,8 @@ npm run seed
 - `ssh -T git@github-agent` и `ssh -T git@github-hack` отвечают;
 - `git remote -v` в агенте и Work указывает на разные аккаунты.
 
+Тестовый день 19.11: `TEST_DAY.md`.
+
 ## 2. Утро 21.11
 
 1. Запустить `./start.sh` на Linux или `.\start.ps1` на Windows.
