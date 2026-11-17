@@ -456,7 +456,14 @@ npm run discover:kaiten
 KAITEN_BOARD_ID=<id>
 ```
 
-3. Создайте доску и колонки:
+3. Создайте колонки и дорожки автоматически:
+
+```bash
+npm run setup:kaiten -- --dry-run
+npm run setup:kaiten
+```
+
+Скрипт создаёт недостающие колонки:
 
 ```text
 00 Inbox
@@ -475,6 +482,8 @@ KAITEN_BOARD_ID=<id>
 Questions
 ```
 
+и дорожки `Captain`, `Developer`, `Both`. Существующие колонки не удаляются.
+
 4. Проверьте доступ:
 
 ```bash
@@ -483,9 +492,9 @@ npm run seed
 npm run smoke
 ```
 
-5. Если колонок не хватает, `seed` покажет список. Создайте их в Kaiten.
+`seed` должен сказать: «Все колонки Aillix на месте».
 
-4. Если Kaiten недоступен:
+5. Если Kaiten недоступен:
 
 ```bash
 export BOARD_BACKEND=local

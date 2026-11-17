@@ -13,6 +13,9 @@ npm install
 npm run build
 npm test
 chmod +x start.sh
+npm run setup:kaiten -- --dry-run
+npm run setup:kaiten
+npm run seed
 ```
 
 ### Windows
@@ -24,10 +27,15 @@ copy .env.example .env
 npm install
 npm run build
 npm test
+npm run setup:kaiten -- --dry-run
+npm run setup:kaiten
+npm run seed
 ```
 
 Проверить:
 
+- `npm run seed` — «Все колонки Aillix на месте»;
+- `npm run smoke` — Kaiten отвечает;
 - `node dist/mcp/server.js` запускается без ошибок;
 - `/mcps` показывает Kaiten и T-Invest;
 - Console открывается на `http://127.0.0.1:8787`;

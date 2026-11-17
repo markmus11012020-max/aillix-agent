@@ -5,11 +5,13 @@ export interface KaitenColumn {
   id: number;
   title: string;
   type?: number;
+  sort_order?: number;
 }
 
 export interface KaitenLane {
   id: number;
   title: string;
+  sort_order?: number;
 }
 
 export interface KaitenBoard {
@@ -54,6 +56,17 @@ export interface UpdateCardInput {
   dueDate?: string;
   externalId?: string;
   condition?: number;
+}
+
+export interface CreateColumnInput {
+  title: string;
+  type: 1 | 2 | 3;
+  sortOrder?: number;
+}
+
+export interface CreateLaneInput {
+  title: string;
+  sortOrder?: number;
 }
 
 export interface KaitenClientOptions {
@@ -161,6 +174,23 @@ export class KaitenClient {
       columns: board.columns ?? [],
       lanes: board.lanes ?? [],
     };
+  }
+
+  async createColumn(input: CreateColumnInput): Promise<KaitenColumn> {
+    this.assertWrite();
+    return this.request<KaitenColumn>("POST", `/boards/${this.boardId}/columns`, {
+      title: input.title,
+      type: input.type,
+      sort_order: input.sortOrder,
+    });
+  }
+
+  async createLane(input: CreateLaneInput): Promise<KaitenLane> {
+    this.assertWrite();
+    return this.request<KaitenLane>("POST", `/boards/${this.boardId}/lanes`, {
+      title: input.title,
+      sort_order: input.sortOrder,
+    });
   }
 
   async listCards(columnId?: number): Promise<KaitenCard[]> {

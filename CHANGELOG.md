@@ -16,4 +16,5 @@
 - OpenCode Go: `/connect` → API key → `/models`.
 - T-Invest MCP: remote sandbox, read-only, сертификаты Минцифры.
 - GitHub: агент и Работа на разных аккаунтах, разные SSH-ключи.
+- `npm run setup:kaiten` — создание 14 колонок и дорожек.
 - Только локальный контур.

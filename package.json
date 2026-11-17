@@ -17,6 +17,7 @@
     "smoke": "tsx scripts/smoke-kaiten.ts",
     "smoke:tinvest": "tsx scripts/smoke-tinvest.ts",
     "discover:kaiten": "tsx scripts/discover-kaiten.ts",
+    "setup:kaiten": "tsx scripts/setup-kaiten.ts",
     "seed": "tsx scripts/seed-board.ts",
     "start": "powershell -ExecutionPolicy Bypass -File ./start.ps1",
     "start:windows": "powershell -ExecutionPolicy Bypass -File ./start.ps1",

@@ -57,6 +57,10 @@ copy .env.example .env
 npm install
 npm run build
 npm test
+npm run setup:kaiten -- --dry-run
+npm run setup:kaiten
+npm run seed
+npm run smoke
 .\start.ps1
 ```
 
@@ -72,6 +76,14 @@ opencode
 ```
 
 Подробный Linux-план: `LINUX.md`.
+
+### Kaiten
+
+- `npm run discover:kaiten` — показать доски, колонки и дорожки.
+- `npm run setup:kaiten -- --dry-run` — проверить, чего не хватает.
+- `npm run setup:kaiten` — создать 14 колонок и дорожки `Captain`, `Developer`, `Both`.
+- `npm run seed` — проверить, что все колонки на месте.
+- `npm run smoke` — проверить доступ к Kaiten.
 
 ### T-Invest MCP
 
@@ -91,8 +103,9 @@ OpenCode
   │   ├── HITL / permissions
   │   ├── Kaiten / local board
   │   └── Console HTTP server
-  ├── MCP server (TypeScript)
-  │   └── kaiten_* tools
+  ├── MCP servers
+  │   ├── kaiten (local)
+  │   └── t-invest (remote sandbox)
   ├── agents
   │   ├── hackathon
   │   ├── hackathon-captain
