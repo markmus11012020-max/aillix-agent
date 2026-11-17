@@ -1,0 +1,62 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "hackathon",
+  "instructions": [
+    "../AGENTS.md",
+    "../Aillix/01_КОНТЕКСТ.md",
+    "../Aillix/05_ЛИНТ.md"
+  ],
+  "mcp": {
+    "servers": {
+      "kaiten": {
+        "type": "local",
+        "command": ["node", "dist/mcp/server.js"],
+        "environment": {
+          "KAITEN_API_URL": "{env:KAITEN_API_URL}",
+          "KAITEN_API_TOKEN": "{env:KAITEN_API_TOKEN}",
+          "KAITEN_BOARD_ID": "{env:KAITEN_BOARD_ID}",
+          "KAITEN_READ_ONLY": "{env:KAITEN_READ_ONLY}"
+        },
+        "codemode": true,
+        "timeout": {
+          "startup": 30000,
+          "catalog": 30000,
+          "execution": 60000
+        }
+      },
+      "t-invest": {
+        "type": "remote",
+        "url": "{env:T_INVEST_MCP_URL}",
+        "headers": {
+          "Authorization": "Bearer {env:T_INVEST_TOKEN}"
+        },
+        "oauth": false,
+        "timeout": {
+          "startup": 30000,
+          "catalog": 30000,
+          "execution": 60000
+        }
+      }
+    }
+  },
+  "permissions": [
+    { "action": "kaiten_*", "resource": "*", "effect": "allow" },
+    { "action": "t_invest_*", "resource": "*", "effect": "allow" },
+    { "action": "kaiten_create_card", "resource": "*", "effect": "ask" },
+    { "action": "kaiten_update_card", "resource": "*", "effect": "ask" },
+    { "action": "kaiten_move_card", "resource": "*", "effect": "ask" },
+    { "action": "kaiten_add_comment", "resource": "*", "effect": "ask" },
+    { "action": "kaiten_delete_card", "resource": "*", "effect": "deny" },
+    { "action": "hackathon_decide", "resource": "*", "effect": "ask" },
+    { "action": "hackathon_init", "resource": "*", "effect": "ask" },
+    { "action": "hackathon_question", "resource": "*", "effect": "ask" },
+    { "action": "hackathon_sync", "resource": "*", "effect": "ask" },
+    { "action": "hackathon_record", "resource": "*", "effect": "allow" },
+    { "action": "hackathon_submit", "resource": "*", "effect": "ask" },
+    { "action": "edit", "resource": "state/**", "effect": "allow" },
+    { "action": "edit", "resource": "card/**", "effect": "allow" },
+    { "action": "edit", "resource": "KANBAN.md", "effect": "allow" },
+    { "action": "edit", "resource": ".env", "effect": "deny" },
+    { "action": "shell", "resource": "*", "effect": "deny" }
+  ]
+}

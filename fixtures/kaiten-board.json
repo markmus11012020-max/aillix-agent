@@ -1,0 +1,24 @@
+{
+  "board_id": 1,
+  "columns": [
+    { "id": 1, "title": "00 Inbox" },
+    { "id": 2, "title": "01 Intake" },
+    { "id": 3, "title": "02 User" },
+    { "id": 4, "title": "03 Options" },
+    { "id": 5, "title": "04 Compare" },
+    { "id": 6, "title": "05 Value" },
+    { "id": 7, "title": "06 AI/MCP" },
+    { "id": 8, "title": "07 MVP" },
+    { "id": 9, "title": "08 Arch/Risks" },
+    { "id": 10, "title": "09 Plan" },
+    { "id": 11, "title": "10 Card" },
+    { "id": 12, "title": "11 HITL" },
+    { "id": 13, "title": "12 Done" },
+    { "id": 14, "title": "Questions" }
+  ],
+  "lanes": [
+    { "id": 1, "title": "Captain" },
+    { "id": 2, "title": "Developer" },
+    { "id": 3, "title": "Both" }
+  ]
+}

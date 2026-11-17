@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Aillix Console</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">Aillix <span>Agent</span></div>
+        <div class="stepline" id="stepline">Загрузка...</div>
+        <div class="timer" id="timer">—</div>
+        <button class="ghost" id="refresh">Обновить</button>
+      </header>
+
+      <aside class="sidebar">
+        <button class="nav active" data-tab="dashboard">Пульт</button>
+        <button class="nav" data-tab="task">Задание</button>
+        <button class="nav" data-tab="options">Варианты</button>
+        <button class="nav" data-tab="card">Карточка</button>
+        <button class="nav" data-tab="questions">Вопросы <b id="qcount">0</b></button>
+        <button class="nav" data-tab="recommendations">Рекомендации <b id="rcount">0</b></button>
+        <button class="nav" data-tab="board">Доска</button>
+        <button class="nav" data-tab="log">Журнал</button>
+        <button class="nav" data-tab="settings">Настройки</button>
+      </aside>
+
+      <main class="main">
+        <section class="tab active" id="tab-dashboard">
+          <div class="card" id="startPanel" style="display:none">
+            <h1>Запуск Aillix Agent</h1>
+            <p class="muted">Вставьте задание организаторов. Агент создаст state, доску и шаг 1.</p>
+            <textarea id="startTask" rows="6" placeholder="Текст задания..."></textarea>
+            <button class="primary" id="startAgent">Старт</button>
+          </div>
+          <div id="dashboardBody">
+          <div class="hero">
+            <div>
+              <div class="eyebrow">Текущий шаг</div>
+              <h1 id="stepTitle">—</h1>
+              <div class="muted" id="stepOwner">—</div>
+            </div>
+            <div class="progressbox">
+              <div class="progress"><div id="progressBar"></div></div>
+              <div class="muted" id="progressText">0%</div>
+            </div>
+          </div>
+
+          <div class="grid3">
+            <article class="card"><div class="label">Прошло</div><div class="big" id="elapsed">—</div></article>
+            <article class="card"><div class="label">До дедлайна</div><div class="big" id="remaining">—</div></article>
+            <article class="card"><div class="label">Следующий стоп</div><div class="big small" id="nextStop">—</div></article>
+          </div>
+
+          <div class="card">
+            <div class="row"><h2>Блокеры</h2><button class="primary" id="nextStep">Дальше</button></div>
+            <ul id="blockers" class="list"></ul>
+            <div class="warning" id="warning"></div>
+          </div>
+
+          <div class="grid2">
+            <article class="card"><h2>Вопросы</h2><div id="dashQuestions" class="list"></div></article>
+            <article class="card"><h2>Рекомендации</h2><div id="dashRecommendations" class="list"></div></article>
+          </div>
+          </div>
+        </section>
+
+        <section class="tab" id="tab-task">
+          <div class="card"><h1>Задание</h1><pre id="taskText" class="pre"></pre></div>
+          <div class="card"><h2>Артефакт шага 1</h2><pre id="intakeArtifact" class="pre"></pre></div>
+        </section>
+
+        <section class="tab" id="tab-options">
+          <div class="card"><h1>Три варианта</h1><pre id="optionsArtifact" class="pre"></pre></div>
+          <div class="card"><h2>Сравнение и выбор</h2><pre id="compareArtifact" class="pre"></pre></div>
+        </section>
+
+        <section class="tab" id="tab-card">
+          <div class="row">
+            <h1>Карточка</h1>
+            <div class="actions">
+              <button class="primary" id="assembleCard">Собрать</button>
+              <button id="checkCard">Проверить</button>
+              <button id="copyCard">Копировать</button>
+            </div>
+          </div>
+          <textarea id="cardText" spellcheck="false" placeholder="Карточка появится здесь..."></textarea>
+          <div class="card"><h2>Линт</h2><pre id="lintReport" class="pre">—</pre></div>
+        </section>
+
+        <section class="tab" id="tab-questions">
+          <div class="card"><h1>Вопросы</h1><div id="questionsList" class="list"></div></div>
+        </section>
+
+        <section class="tab" id="tab-recommendations">
+          <div class="card"><h1>Рекомендации</h1><div id="recommendationsList" class="list"></div></div>
+          <div class="card">
+            <h2>Зафиксировать решение капитана</h2>
+            <input id="decisionText" placeholder="Решение" />
+            <textarea id="decisionReason" placeholder="Причина" rows="2"></textarea>
+            <button class="primary" id="saveDecision">Записать решение</button>
+          </div>
+        </section>
+
+        <section class="tab" id="tab-board">
+          <div class="card">
+            <div class="row"><h1>Доска</h1><button id="syncBoard">Синхронизировать</button></div>
+            <div id="boardInfo" class="list"></div>
+          </div>
+        </section>
+
+        <section class="tab" id="tab-log">
+          <div class="card"><h1>Журнал решений</h1><div id="decisionsList" class="list"></div></div>
+        </section>
+
+        <section class="tab" id="tab-settings">
+          <div class="card">
+            <h1>Настройки</h1>
+            <label>UI token <input id="uiToken" placeholder="Если задан UI_TOKEN" /></label>
+            <button id="saveToken">Сохранить токен</button>
+            <p class="muted">Токен хранится только в localStorage браузера.</p>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>
