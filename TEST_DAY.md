@@ -19,6 +19,7 @@
 - [ ] `T_INVEST_TOKEN` — read-only sandbox, если есть. Если нет — статус «ПРОВЕРИТЬ».
 - [ ] Сертификаты Минцифры установлены.
 - [ ] OpenCode Go подключён: `/connect` → API key → `/models`.
+- [ ] В OpenCode выбрана рабочая модель, а не `*-free` по умолчанию.
 - [ ] `npm run setup:kaiten -- --dry-run` показывает «все на месте».
 - [ ] `npm run seed` — «Все колонки Aillix на месте».
 - [ ] `npm run smoke` — доска отвечает, карточек 0.
@@ -50,6 +51,7 @@ npm run smoke
 
 - `kaiten` — connected, 8 инструментов;
 - `t-invest` — connected или «ПРОВЕРИТЬ»;
+- модель в статус-баре — нужная, не `*-free`;
 - Console открывается на `http://127.0.0.1:8787`;
 - на доске `Test` 17 колонок и 4 дорожки.
 
