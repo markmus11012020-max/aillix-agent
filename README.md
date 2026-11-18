@@ -4,6 +4,16 @@ Aillix Agent — очный агент для второго этапа. Упр�
 
 Перенос на боевой Linux и полный контекст: `../ПЕРЕНОС_НА_LINUX.md`.
 
+Общий контекст хакатона: `HACKATHON.md`.
+Bootstrap в пустую папку: `1.txt`.
+
+```bash
+cp 1.txt /path/to/empty-folder/1.txt
+cd /path/to/empty-folder
+bash 1.txt
+bash 1.txt day
+```
+
 Репозиторий агента: `https://github.com/markmus11012020-max/aillix-agent` (Private).
 Рабочий репозиторий хакатона — отдельный аккаунт, без кода агента.
 
