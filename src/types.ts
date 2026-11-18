@@ -19,7 +19,7 @@ export interface StepDefinition {
   title: string;
   owner: AgentRole;
   artifact: string;
-  kaitenColumn: string;
+  boardColumn: string;
   timeLimitMin: number;
   gate: string[];
 }
@@ -46,7 +46,7 @@ export interface BoardCard {
 }
 
 export interface Board {
-  readonly kind: "kaiten" | "local";
+  readonly kind: "local";
   health(): Promise<{ ok: boolean; message: string }>;
   getColumns(): Promise<Array<{ id: string; title: string }>>;
   listCards(): Promise<BoardCard[]>;

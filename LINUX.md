@@ -9,7 +9,7 @@
   ├── /opt/aillix-agent
   │   ├── Aillix Agent
   │   ├── OpenCode
-  │   ├── Kaiten MCP
+  │   ├── Obsidian Kanban/Canvas
   │   ├── T-Invest MCP
   │   ├── Console 127.0.0.1:8787
   │   └── .env с токенами
@@ -29,7 +29,7 @@
 
 1. Включите полное шифрование диска (LUKS) при установке.
 2. Создайте двух пользователей:
-   - `aillix` — агент, ключи, Kaiten, T-Invest;
+   - `aillix` — агент, ключи, Obsidian, T-Invest;
    - `work` — хакатон, рабочий репозиторий.
    Если второй пользователь не нужен, используйте два каталога: `/opt/aillix-agent` и `/work/hackathon`.
 3. Обновите систему:
@@ -152,11 +152,8 @@ nano .env
 Заполните:
 
 ```env
-KAITEN_API_URL=https://<domain>.kaiten.ru/api/latest
-KAITEN_API_TOKEN=<token>
-KAITEN_BOARD_ID=<board_id>
-KAITEN_READ_ONLY=0
-BOARD_BACKEND=kaiten
+BOARD_FILE=../board/KANBAN.md
+CANVAS_FILE=../board/AILLIX_CANVAS.canvas
 
 T_INVEST_MCP_URL=https://sandbox-invest-public-api.tbank.ru/mcp
 T_INVEST_TOKEN=<read-only token>
@@ -170,11 +167,17 @@ UI_PORT=8787
 UI_TOKEN=
 ```
 
-Если Kaiten нет:
+Доска Obsidian:
+
+```bash
+mkdir -p /opt/aillix-board
+```
+
+В `.env`:
 
 ```env
-BOARD_BACKEND=local
-KAITEN_READ_ONLY=1
+BOARD_FILE=../aillix-board/KANBAN.md
+CANVAS_FILE=../aillix-board/AILLIX_CANVAS.canvas
 ```
 
 Сделайте скрипт запуска исполняемым:
@@ -201,7 +204,7 @@ npm run smoke:tinvest
 
 Если 401/403 — токен или права. Если TLS-ошибка — сертификаты.
 
-После запуска OpenCode откройте `/mcps` и проверьте `kaiten` и `t-invest`.
+После запуска OpenCode откройте `/mcps` и проверьте `t-invest`.
 Если CLI показывает пусто, ориентируйтесь на `/mcps` в TUI.
 
 ## 7. Подключение OpenCode Go
@@ -436,72 +439,39 @@ fi
 
 В Work — тот же hook, но с `github-hack`.
 
-## 11. Kaiten
+## 11. Obsidian
 
-1. Возьмите API-токен:
-   - Kaiten → профиль → API key;
-   - или `https://aillix.kaiten.ru/profile/api-key`;
-   - вставьте в `agent/.env` как `KAITEN_API_TOKEN`, не в чат.
-
-2. Определите ID доски:
+1. Установите Obsidian.
+2. Создайте vault:
 
 ```bash
-cd /opt/aillix-agent
-npm run discover:kaiten
+mkdir -p /opt/aillix-board
 ```
 
-Скрипт покажет `BOARD_ID`, колонки и дорожки. Впишите ID в `.env`:
+3. В `.env`:
 
 ```env
-KAITEN_BOARD_ID=<id>
+BOARD_FILE=../aillix-board/KANBAN.md
+CANVAS_FILE=../aillix-board/AILLIX_CANVAS.canvas
 ```
 
-3. Создайте колонки и дорожки автоматически:
+4. Включите плагин Kanban:
+   - Settings → Community plugins → Browse → Kanban → Install → Enable.
 
-```bash
-npm run setup:kaiten -- --dry-run
-npm run setup:kaiten
-```
-
-Скрипт создаёт недостающие колонки:
-
-```text
-00 Inbox
-01 Intake
-02 User
-03 Options
-04 Compare
-05 Value
-06 AI/MCP
-07 MVP
-08 Arch/Risks
-09 Plan
-10 Card
-11 HITL
-12 Done
-Questions
-```
-
-и дорожки `Captain`, `Developer`, `Both`. Существующие колонки не удаляются.
-
-4. Проверьте доступ:
+5. Запустите агента и проверьте доску:
 
 ```bash
 cd /opt/aillix-agent
-npm run seed
 npm run smoke
 ```
 
-`seed` должен сказать: «Все колонки Aillix на месте».
+6. Откройте в Obsidian:
+   - `KANBAN.md` — Kanban;
+   - `AILLIX_CANVAS.canvas` — карта.
 
-5. Если Kaiten недоступен:
+Правило: доска односторонняя. Агент пишет, человек читает. Ручные правки будут перезаписаны.
 
-```bash
-export BOARD_BACKEND=local
-./start.sh
-```
-
-Агент будет писать в `KANBAN.md`.
+Если Obsidian недоступен, `KANBAN.md` открывается как обычный markdown, state не теряется.
 
 ## 12. Console
 
@@ -521,7 +491,7 @@ export BOARD_BACKEND=local
 - Токены не в Git, не в карточке, не на скриншотах.
 - OpenCode Go key хранится в OpenCode, не в проекте.
 - T-Invest token — read-only, sandbox.
-- После хакатона отозвать Kaiten-токен, T-Invest-токен и ротировать OpenCode Go key.
+- После хакатона отозвать T-Invest-токен и ротировать OpenCode Go key.
 - При необходимости удалить `/opt/aillix-agent` и затереть свободное место.
 - Всё работает на ноутбуке.
 
@@ -538,13 +508,13 @@ export BOARD_BACKEND=local
 Не работают:
 
 - LLM-запросы;
-- Kaiten и T-Invest, если они внешние.
+- T-Invest, если внешний.
 
 Действия:
 
 1. Включить hotspot.
 2. Если LLM недоступен — работать по шаблонам вручную.
-3. Если Kaiten недоступен — `BOARD_BACKEND=local`.
+3. Если Obsidian недоступен — открыть `KANBAN.md` как markdown.
 4. Карточку всё равно собрать и отправить до 20:00.
 
 ## 15. Проверка до 21.11
@@ -561,10 +531,10 @@ export BOARD_BACKEND=local
 - [ ] Тесты: `npm test`.
 - [ ] `.env` заполнен, `chmod 600`.
 - [ ] `./start.sh` запускается.
-- [ ] `/mcps` — `kaiten` и `t-invest`.
+- [ ] `/mcps` — `t-invest`.
 - [ ] Console открывается на 8787.
 - [ ] `hackathon_status` работает.
-- [ ] Kaiten или `KANBAN.md` работает.
+- [ ] Obsidian Kanban и Canvas работают.
 - [ ] Offline-режим проверен.
 - [ ] GitHub: два аккаунта, два ключа, два remote.
 - [ ] Рабочий репозиторий отдельно от агента.
@@ -579,11 +549,9 @@ export BOARD_BACKEND=local
 | `/connect` не показывает OpenCode Go | Проверить подписку и API key в console |
 | `Model unavailable` | `/models`, выбрать доступную модель |
 | `t-invest` не подключён | Проверить `T_INVEST_MCP_URL`, токен, сертификаты |
-| MCP not connected | `/mcps`, проверить `dist/mcp/server.js` |
+| MCP not connected | `/mcps`, проверить T-Invest токен и сертификаты |
 | Плагин не загрузился | Проверить `.opencode/plugins/aillix.js` и `npm run build` |
-| 401 Kaiten | Проверить `KAITEN_API_TOKEN` |
-| 403 Kaiten | Проверить права токена |
-| 404 Kaiten | Проверить `KAITEN_BOARD_ID` и колонки |
-| 429 Kaiten | Подождать, сработает backoff |
+| Kanban не открывается как доска | Проверить frontmatter `kanban-plugin: board` и плагин Kanban |
+| Canvas пустой | `npm run canvas`, проверить `STATE.json` |
 | Console не открывается | Проверить `UI_PORT` и `UI_TOKEN` |
-| Нет интернета | `BOARD_BACKEND=local`, ручной режим, hotspot |
+| Нет интернета | Локальная доска, ручной режим, hotspot |

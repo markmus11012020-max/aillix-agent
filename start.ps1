@@ -25,8 +25,7 @@ if (Test-Path ".env") {
     }
   }
 } else {
-  Write-Host "Файл .env не найден. Будет использован локальный режим."
-  $env:BOARD_BACKEND = "local"
+  Write-Host "Файл .env не найден. Доска: KANBAN.md."
 }
 
 $certBundle = if ($env:T_INVEST_CA_BUNDLE) { $env:T_INVEST_CA_BUNDLE } else { Join-Path $HOME "certs\russian-trusted.pem" }
@@ -45,6 +44,10 @@ npm run build
 Write-Host ""
 $uiPort = $env:UI_PORT
 if (-not $uiPort) { $uiPort = "8787" }
+if (-not $env:BOARD_FILE) { $env:BOARD_FILE = "..\board\KANBAN.md" }
+if (-not $env:CANVAS_FILE) { $env:CANVAS_FILE = "..\board\AILLIX_CANVAS.canvas" }
+Write-Host "Доска: $env:BOARD_FILE"
+Write-Host "Canvas: $env:CANVAS_FILE"
 Write-Host "Aillix Console: http://127.0.0.1:$uiPort"
 Write-Host "Запуск OpenCode..."
 opencode

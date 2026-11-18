@@ -16,9 +16,10 @@ async function setup() {
     projectRoot: dir,
     stateDir: path.join(dir, "state"),
     cardDir: path.join(dir, "card"),
-    boardBackend: "local",
+    boardFile: path.join(dir, "KANBAN.md"),
+    canvasFile: path.join(dir, "AILLIX_CANVAS.canvas"),
   });
-  const board = new LocalBoard(config.stateDir, dir);
+  const board = new LocalBoard(config.stateDir, config.boardFile);
   const store = new StateStore(config, board);
   return { dir, config, board, store };
 }

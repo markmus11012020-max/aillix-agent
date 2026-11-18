@@ -18,11 +18,11 @@ export class LocalBoard implements Board {
   private readonly markdownFile: string;
 
   constructor(
-    private readonly stateDir: string,
-    projectRoot: string,
+    stateDir: string,
+    boardFile: string,
   ) {
     this.dataFile = path.join(stateDir, "local-board.json");
-    this.markdownFile = path.join(projectRoot, "KANBAN.md");
+    this.markdownFile = boardFile;
   }
 
   private async load(): Promise<LocalBoardFile> {
@@ -35,26 +35,35 @@ export class LocalBoard implements Board {
   }
 
   private render(data: LocalBoardFile): string {
-    const lines: string[] = ["# Aillix Agent Board", ""];
+    const lines: string[] = [
+      "---",
+      "kanban-plugin: board",
+      "---",
+      "",
+      "# Aillix Agent Board",
+      "",
+      "<!-- Aillix: файл создаётся агентом. Ручные правки будут перезаписаны. -->",
+      "",
+    ];
     for (const column of BOARD_COLUMNS) {
       lines.push(`## ${column}`, "");
       const cards = data.cards.filter((card) => card.column === column);
       if (cards.length === 0) {
-        lines.push("_Нет карточек._", "");
+        lines.push("");
         continue;
       }
       for (const card of cards) {
-        lines.push(`- [ ] ${card.id} | ${card.title}`);
-        if (card.externalId) lines.push(`  external_id: ${card.externalId}`);
-        if (card.lane) lines.push(`  lane: ${card.lane}`);
+        const checked = column === "12 Done" ? "x" : " ";
+        lines.push(`- [${checked}] ${card.id} | ${card.title}`);
+        if (card.externalId) lines.push(`  - external_id: ${card.externalId}`);
+        if (card.lane) lines.push(`  - lane: ${card.lane}`);
         if (card.description) {
           const description = card.description.replace(/\n/g, "\n    ");
-          lines.push(`  description: ${description}`);
+          lines.push(`  - description: ${description}`);
         }
         if (card.comments.length > 0) {
-          lines.push("  comments:");
           for (const comment of card.comments) {
-            lines.push(`  - ${comment.replace(/\n/g, "\n    ")}`);
+            lines.push(`  - comment: ${comment.replace(/\n/g, "\n    ")}`);
           }
         }
       }
@@ -64,7 +73,7 @@ export class LocalBoard implements Board {
   }
 
   async health(): Promise<{ ok: boolean; message: string }> {
-    return { ok: true, message: "Local board is active" };
+    return { ok: true, message: `Obsidian board: ${this.markdownFile}` };
   }
 
   async getColumns(): Promise<Array<{ id: string; title: string }>> {
@@ -124,6 +133,6 @@ export class LocalBoard implements Board {
   async sync(): Promise<{ ok: boolean; message: string }> {
     const data = await this.load();
     await this.save(data);
-    return { ok: true, message: `Local board synced: ${data.cards.length} cards` };
+    return { ok: true, message: `Obsidian board synced: ${data.cards.length} cards` };
   }
 }

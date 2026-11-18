@@ -27,7 +27,11 @@ function ownerAgent(owner: string): string {
   return "hackathon";
 }
 
-function formatStatus(dashboard: Awaited<ReturnType<StateStore["dashboard"]>>, state: State): string {
+function formatStatus(
+  dashboard: Awaited<ReturnType<StateStore["dashboard"]>>,
+  state: State,
+  config: AppConfig,
+): string {
   const lines = [
     `Aillix Agent`,
     `Шаг ${dashboard.stepNumber}: ${dashboard.stepTitle}`,
@@ -39,6 +43,8 @@ function formatStatus(dashboard: Awaited<ReturnType<StateStore["dashboard"]>>, s
     `Следующий стоп: ${dashboard.nextStopLabel}`,
     `Вопросы: ${dashboard.openQuestions} (блокирующих ${dashboard.blockingQuestions})`,
     `Рекомендации ждут решения: ${dashboard.proposedRecommendations}`,
+    `Доска: ${config.boardFile}`,
+    `Canvas: ${config.canvasFile}`,
     "",
     dashboard.blockers.length ? `Блокеры:\n- ${dashboard.blockers.join("\n- ")}` : "Блокеров нет.",
     "",
@@ -69,7 +75,10 @@ export async function registerHackathonTools(ctx: Ctx, store: StateStore, config
           save: [],
         });
         const state = await store.init((input as { task: string }).task);
-        return text(`Aillix Agent инициализирован. Текущий шаг: ${stepById(state.step).title}.`);
+        return text(
+          `Aillix Agent инициализирован. Текущий шаг: ${stepById(state.step).title}.\n` +
+            `Доска: ${config.boardFile}\nCanvas: ${config.canvasFile}`,
+        );
       },
     });
 
@@ -81,7 +90,7 @@ export async function registerHackathonTools(ctx: Ctx, store: StateStore, config
       execute: async () => {
         const state = await store.get();
         const dashboard = await store.dashboard();
-        return text(formatStatus(dashboard, state));
+        return text(formatStatus(dashboard, state, config));
       },
     });
 
@@ -289,7 +298,7 @@ export async function registerHackathonTools(ctx: Ctx, store: StateStore, config
 
     editor.add({
       name: "sync",
-      description: "Синхронизировать состояние с Kaiten или локальной доской.",
+      description: "Синхронизировать состояние с Obsidian Kanban и Canvas.",
       input: obj({}),
       options: { namespace: "hackathon", codemode: true },
       execute: async (_input, context) => {

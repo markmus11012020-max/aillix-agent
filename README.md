@@ -1,6 +1,6 @@
 # Aillix Agent
 
-Aillix Agent — очный агент для второго этапа. Управляет процессом, артефактами и доской, но не пишет продуктовый код и не принимает решения за капитана. Текущая версия: 1.0.
+Aillix Agent — очный агент для второго этапа. Управляет процессом, артефактами и доской, но не пишет продуктовый код и не принимает решения за капитана. Текущая версия: 1.1.
 
 Репозиторий агента: `https://github.com/markmus11012020-max/aillix-agent` (Private).
 Рабочий репозиторий хакатона — отдельный аккаунт, без кода агента.
@@ -10,15 +10,16 @@ Aillix Agent — очный агент для второго этапа. Упр�
 | Модуль | Назначение |
 |---|---|
 | OpenCode plugin | 11 инструментов, состояние, HITL, синхронизация, Console |
-| Kaiten MCP | 8 инструментов для карточек, колонок и комментариев |
+| Obsidian Kanban | односторонняя витрина `board/KANBAN.md` |
+| Obsidian Canvas | карта шагов, вопросов и решений `board/AILLIX_CANVAS.canvas` |
 | T-Invest MCP | remote sandbox, read-only, сертификаты Минцифры |
 | Aillix Console | локальный веб-пульт на `127.0.0.1:8787` |
 | State machine | 11 шагов, гейты, артефакты, время |
 | Агенты | orchestrator, captain, developer, reviewer |
 | Команды | `/hackathon start`, `next`, `status`, `card`, `check`, `sync`, `question`, `decision`, `submit` |
-| Локальная доска | `KANBAN.md`, если Kaiten недоступен |
-| Тесты | state, protocol, Kaiten, local board, card/lint |
-| Документация | README, RUNBOOK, ARCHITECTURE, KAITEN_API, SECURITY |
+| Локальная доска | `KANBAN.md` в vault Obsidian |
+| Тесты | state, protocol, local board, card/lint |
+| Документация | README, RUNBOOK, ARCHITECTURE, OBSIDIAN, SECURITY |
 
 ## 2. Что агент не делает
 
@@ -28,7 +29,8 @@ Aillix Agent — очный агент для второго этапа. Упр�
 - не даёт рекомендаций «покупать/продавать»;
 - не выдумывает цифры, инструменты и источники;
 - не обещает автоторговлю;
-- не удаляет карточки Kaiten;
+- не удаляет карточки доски;
+- не перезаписывает ручные правки доски: Obsidian — односторонняя витрина;
 - не переводит карточку в `HITL` или `Done` без подтверждения;
 - не использует внешние проекты, старые домены и сторонние заготовки.
 
@@ -40,7 +42,7 @@ Aillix Agent — очный агент для второго этапа. Упр�
 cd /opt/aillix-agent
 cp .env.example .env
 chmod 600 .env
-# заполнить KAITEN_API_URL, KAITEN_API_TOKEN, KAITEN_BOARD_ID
+# заполнить T_INVEST_TOKEN, если есть
 npm install
 npm run build
 npm test
@@ -53,13 +55,10 @@ chmod +x start.sh
 ```powershell
 cd D:\Invest-Premarket\agent
 copy .env.example .env
-# заполнить KAITEN_API_URL, KAITEN_API_TOKEN, KAITEN_BOARD_ID
+# заполнить T_INVEST_TOKEN, если есть
 npm install
 npm run build
 npm test
-npm run setup:kaiten -- --dry-run
-npm run setup:kaiten
-npm run seed
 npm run smoke
 .\start.ps1
 ```
@@ -79,13 +78,15 @@ opencode
 
 Тестовый день 19.11: `TEST_DAY.md` — роли, тайминг, чек-листы и метрики.
 
-### Kaiten
+### Obsidian
 
-- `npm run discover:kaiten` — показать доски, колонки и дорожки.
-- `npm run setup:kaiten -- --dry-run` — проверить, чего не хватает.
-- `npm run setup:kaiten` — создать 14 колонок и дорожки `Captain`, `Developer`, `Both`.
-- `npm run seed` — проверить, что все колонки на месте.
-- `npm run smoke` — проверить доступ к Kaiten.
+- Vault: `D:\Invest-Premarket\board`.
+- `BOARD_FILE=../board/KANBAN.md`.
+- `CANVAS_FILE=../board/AILLIX_CANVAS.canvas`.
+- Плагин Obsidian Kanban обязателен.
+- `npm run smoke` — проверить доску, файл и число карточек.
+- `npm run canvas` — пересобрать Canvas из `state/STATE.json`.
+- Доска односторонняя: агент пишет, человек смотрит. Ручные правки будут перезаписаны.
 
 ### T-Invest MCP
 
@@ -103,10 +104,9 @@ OpenCode
   │   ├── hackathon_* tools
   │   ├── state machine
   │   ├── HITL / permissions
-  │   ├── Kaiten / local board
+  │   ├── Obsidian Kanban / Canvas
   │   └── Console HTTP server
   ├── MCP servers
-  │   ├── kaiten (local)
   │   └── t-invest (remote sandbox)
   ├── agents
   │   ├── hackathon
@@ -117,7 +117,7 @@ OpenCode
       └── /hackathon ...
 ```
 
-Плагин и MCP используют общий `KaitenClient` и общий интерфейс `Board`. Если Kaiten недоступен, `Board` переключается на `LocalBoard` и пишет в `KANBAN.md`.
+Плагин пишет `state/STATE.json`, `board/KANBAN.md` и `board/AILLIX_CANVAS.canvas`. Источник истины — state, Obsidian — витрина. Отдельного MCP для доски нет.
 
 ## 5. Роли
 
@@ -172,7 +172,7 @@ OpenCode
 | `generate_options` | создаёт 3 концепции из разных классов: контроль риска, поиск возможностей, автоматизация рутины | 3 карточки |
 | `option_fields` | заполняет пользователя, боль, ценность, AI, код, MCP, данные, реализуемость, риски, out-of-scope | структура |
 | `no_strawman` | проверяет, что варианты не являются соломенными чучелами | флаг |
-| `option_cards` | создаёт карточки в Kaiten или `KANBAN.md` | ID карточек |
+| `option_cards` | создаёт карточки в Obsidian Kanban | ID карточек |
 
 ### 6.5. Сравнение и выбор
 
@@ -272,7 +272,7 @@ OpenCode
 |---|---|---|
 | `ask` | не более 3 вопросов за шаг | очередь |
 | `question_fields` | вопрос, почему важно, варианты, рекомендация, блокирует ли | карточка вопроса |
-| `question_card` | создаёт карточку в Kaiten или `KANBAN.md` | ID |
+| `question_card` | создаёт карточку в Obsidian Kanban | ID |
 | `wait` | шаг не закрывается, пока блокирующий вопрос не отвечен | статус |
 | `answer` | записывает ответ человека | `DECISIONS.md` |
 | `close` | закрывает вопрос | статус |
@@ -289,34 +289,31 @@ OpenCode
 | `defer` | откладывает | статус |
 | `only_accepted` | в карточку попадают только принятые решения | правило |
 
-### 6.15. Kaiten
+### 6.15. Obsidian Kanban
 
 | Функция | Что делает | Результат |
 |---|---|---|
-| `health` | проверяет токен и доску | статус |
-| `board` | получает колонки и дорожки | ID |
+| `health` | проверяет путь к `KANBAN.md` | статус |
+| `board` | получает 14 колонок | список |
 | `list_cards` | список карточек | карточки |
-| `get_card` | карточка и комментарии | данные |
 | `create_card` | создаёт карточку | ID |
 | `update_card` | обновляет заголовок, описание, колонку, дорожку | карточка |
 | `move_card` | перемещает карточку | статус |
-| `add_comment` | добавляет черновик или рекомендацию | комментарий |
+| `add_comment` | добавляет комментарий | текст |
 | `external_id` | `aillix:step:NN` защищает от дублей | идемпотентность |
-| `rate_limit` | 50 req/s, обработка 429 | устойчивость |
-| `read_only` | запрещает запись | режим |
-| `fallback` | переключает на `KANBAN.md` | локальная доска |
-| `sync` | сверяет state и доску | отчёт |
+| `frontmatter` | `kanban-plugin: board` для Obsidian | совместимость |
+| `one_way` | агент пишет, человек смотрит | без конфликтов |
+| `sync` | перерисовывает `KANBAN.md` из state | отчёт |
 
-### 6.16. Локальная доска
+### 6.16. Canvas
 
 | Функция | Что делает | Результат |
 |---|---|---|
-| `local_board` | колонки, карточки, комментарии в `KANBAN.md` | файл |
-| `create` | создаёт карточку | ID |
-| `move` | перемещает карточку | статус |
-| `comment` | добавляет комментарий | текст |
-| `offline` | работает без Kaiten и интернета | режим |
-| `same_interface` | тот же интерфейс, что у Kaiten | совместимость |
+| `canvas` | карта 11 шагов, вопросов и решений | `.canvas` |
+| `current` | подсвечивает текущий шаг | цвет |
+| `blockers` | показывает блокеры шага | текст |
+| `links` | связи шаг → вопрос → решение | граф |
+| `read_only` | файл создаётся агентом | витрина |
 
 ### 6.17. Aillix Console
 
@@ -328,9 +325,9 @@ OpenCode
 | Карточка | 6 блоков, лимит, линт | собрать, проверить, скачать |
 | Вопросы | очередь вопросов | ответить, закрыть |
 | Рекомендации | рекомендации агента | принять, отклонить, отложить |
-| Доска | Kaiten или локальная доска | синхронизировать |
+| Доска | Obsidian Kanban и Canvas | синхронизировать |
 | Журнал | решения и время | посмотреть |
-| Настройки | Kaiten, время, лимит, read-only | изменить |
+| Настройки | время, лимит, пути к доске | изменить |
 
 ### 6.18. Состояние и аудит
 
@@ -359,17 +356,16 @@ OpenCode
 
 | Действие | Правило |
 |---|---|
-| чтение Kaiten | allow |
-| создание карточки | ask |
-| обновление карточки | ask |
-| перемещение карточки | ask |
-| комментарий | ask |
+| запись карточки в `KANBAN.md` | allow |
+| обновление карточки | allow |
+| перемещение карточки | allow |
+| комментарий | allow |
 | удаление карточки | deny |
 | вопрос | ask |
 | синхронизация | ask |
 | решение капитана | ask |
 | отправка карточки | ask/deny |
-| запись в `state/`, `card/`, `KANBAN.md` | allow |
+| запись в `state/`, `card/`, `board/` | allow |
 | запись в `.env` | deny |
 | shell | deny |
 
@@ -377,19 +373,17 @@ OpenCode
 
 | Сбой | Поведение |
 |---|---|
-| Kaiten недоступен | `KANBAN.md`, Console показывает локальную доску |
+| Obsidian закрыт | `KANBAN.md` остаётся файлом, агент работает |
+| Canvas не открывается | state и доска важнее, Canvas пересобирается |
 | MCP не подключён | локальная доска и ручные карточки |
 | LLM недоступен | шаблоны, ручной режим, без AI |
 | интернет недоступен | локальная доска, Console работает |
-| 401/403 Kaiten | сообщение, проверка токена и прав |
-| 404 Kaiten | проверка board_id и column_id |
-| 429 Kaiten | backoff и повтор |
 | нет данных | «нет данных», не догадка |
 | состояние повреждено | backup и восстановление |
 
 ### 6.22. Безопасность
 
-- токен Kaiten только в `.env`;
+- токен T-Invest только в `.env`;
 - токен не печатается и не логируется;
 - Console только на `127.0.0.1`;
 - локальный токен Console;
@@ -418,27 +412,25 @@ OpenCode
 | `/hackathon status` | показывает пульт |
 | `/hackathon card` | собирает карточку |
 | `/hackathon check` | запускает линт |
-| `/hackathon sync` | синхронизирует Kaiten или локальную доску |
+| `/hackathon sync` | перерисовывает Kanban и Canvas из state |
 | `/hackathon question <text>` | создаёт вопрос |
 | `/hackathon decision <text>` | фиксирует решение капитана |
 | `/hackathon submit` | финальное подтверждение и перевод в Done |
 
 ## 8. Инструменты
 
-### MCP `kaiten_*`
-
-`kaiten_health`, `kaiten_get_board`, `kaiten_list_cards`, `kaiten_get_card`, `kaiten_create_card`, `kaiten_update_card`, `kaiten_move_card`, `kaiten_add_comment`.
-
 ### Plugin `hackathon_*`
 
 `hackathon_init`, `hackathon_status`, `hackathon_next`, `hackathon_record`, `hackathon_question`, `hackathon_recommend`, `hackathon_decide`, `hackathon_card`, `hackathon_check`, `hackathon_sync`, `hackathon_submit`.
+
+Отдельного MCP для доски нет. Остаётся только T-Invest MCP.
 
 ## 9. Конфигурация
 
 `opencode.jsonc`:
 
 - `default_agent: "hackathon"`;
-- `mcp.servers.kaiten`;
+- `mcp.servers.t-invest`;
 - `.opencode/plugins` — автозагрузка плагина;
 - `permissions`;
 - `instructions`.
@@ -447,16 +439,14 @@ OpenCode
 
 | Переменная | Назначение |
 |---|---|
-| `KAITEN_API_URL` | `https://<domain>.kaiten.ru/api/latest` |
-| `KAITEN_SPACE_ID` | ID пространства, для Aillix — `942277` |
-| `KAITEN_API_TOKEN` | bearer-токен |
-| `KAITEN_BOARD_ID` | ID доски |
-| `KAITEN_READ_ONLY` | `1` — только чтение |
+| `BOARD_FILE` | путь к `KANBAN.md`, по умолчанию `../board/KANBAN.md` |
+| `CANVAS_FILE` | путь к `AILLIX_CANVAS.canvas` |
+| `STATE_DIR` | каталог состояния |
+| `CARD_DIR` | каталог карточки |
 | `T_INVEST_MCP_URL` | `https://sandbox-invest-public-api.tbank.ru/mcp` |
 | `T_INVEST_TOKEN` | read-only токен T-Invest |
 | `T_INVEST_READ_ONLY` | `1` — только чтение |
 | `T_INVEST_CA_BUNDLE` | путь к `russian-trusted.pem`, если не `~/certs` |
-| `BOARD_BACKEND` | `kaiten` или `local` |
 | `HACKATHON_START` | время старта |
 | `HACKATHON_DEADLINE` | 22:00 |
 | `HACKATHON_TARGET` | 20:00 |
@@ -478,14 +468,14 @@ agent/
   LINUX.md
   RUNBOOK.md
   ARCHITECTURE.md
-  KAITEN_API.md
+  OBSIDIAN.md
   SECURITY.md
   src/
-    kaiten/
     board/
+      canvas.ts
+      local.ts
     state/
     card/
-    mcp/
     plugin/
     ui/
     utils/
@@ -509,20 +499,17 @@ agent/
 |---|---|
 | `state.test.ts` | шаги, гейты, артефакты, переходы |
 | `protocol.test.ts` | вопросы, рекомендации, решения |
-| `kaiten.test.ts` | create/move/comment, 401/429, redaction |
-| `local-board.test.ts` | карточки и комментарии в `KANBAN.md` |
+| `local-board.test.ts` | карточки, комментарии и frontmatter `KANBAN.md` |
 | `card.test.ts` | сборка, линт, лимит |
 
 ## 12. Troubleshooting
 
 | Симптом | Что делать |
 |---|---|
-| MCP not connected | `/mcps`, путь к `dist/mcp/server.js` |
-| 401 Kaiten | проверить токен |
-| 403 Kaiten | проверить права токена |
-| 404 Kaiten | проверить `KAITEN_BOARD_ID` и колонки |
-| 429 Kaiten | подождать, backoff |
+| Kanban не открывается как доска | проверить frontmatter `kanban-plugin: board` и плагин Kanban |
+| Canvas пустой | `npm run canvas`, проверить `STATE.json` |
+| MCP not connected | `/mcps`, проверить T-Invest токен и сертификаты |
 | Console не открывается | проверить порт 8787 и `UI_TOKEN` |
 | модель не выбрана | выбрать модель в OpenCode |
-| нет интернета | `BOARD_BACKEND=local` |
+| нет интернета | доска и Console работают локально |
 | карточка не влезает | сократить по порядку из `templates/lint.md` |

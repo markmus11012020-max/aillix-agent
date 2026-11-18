@@ -5,6 +5,8 @@ state/*
 !state/.gitkeep
 card/*
 !card/.gitkeep
+KANBAN.md
+AILLIX_CANVAS.canvas
 backup/
 coverage/
 *.log

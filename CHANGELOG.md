@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 1.1.0
+
+- Kaiten удалён из активного контура.
+- Доска: Obsidian Kanban `KANBAN.md`, односторонняя витрина.
+- Canvas `AILLIX_CANVAS.canvas` генерируется из state.
+- `npm run smoke` проверяет локальную доску.
+- `npm run canvas` пересобирает карту.
+- Добавлен `OBSIDIAN.md`.
+
 ## 1.0.0
 
 - OpenCode plugin с 11 инструментами.

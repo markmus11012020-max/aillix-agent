@@ -74,7 +74,7 @@ export function lintCard(text: string, options: LintOptions): LintResult {
   if (/gpl|mpl|agpl/i.test(normalized)) {
     errors.push({ code: "license", message: "Есть упоминание GPL/MPL/AGPL." });
   }
-  if (/Bearer\s+[A-Za-z0-9._-]+|KAITEN_API_TOKEN|API_TOKEN\s*=/i.test(normalized)) {
+  if (/Bearer\s+[A-Za-z0-9._-]+|API_TOKEN\s*=/i.test(normalized)) {
     errors.push({ code: "secret", message: "Похоже на токен или ключ." });
   }
   if (/^#{1,6}\s/m.test(normalized) || /```/.test(normalized)) {

@@ -22,6 +22,7 @@ import {
   proposedRecommendations,
 } from "./protocol.js";
 import { advance, dashboard, gateReport } from "./machine.js";
+import { writeCanvas } from "../board/canvas.js";
 import { getTimeStatus, timeWarning } from "./time.js";
 import { ensureDir, readJson, readText, writeJsonAtomic, writeTextAtomic } from "../utils/fs.js";
 
@@ -76,7 +77,7 @@ export class StateStore {
     this.cardFile = path.join(config.cardDir, "CARD.md");
     this.templatesDir = path.resolve(config.projectRoot, "templates");
     this.board = board;
-    this.fallbackBoard = new LocalBoard(config.stateDir, config.projectRoot);
+    this.fallbackBoard = new LocalBoard(config.stateDir, config.boardFile);
   }
 
   async load(): Promise<State | null> {
@@ -128,6 +129,9 @@ export class StateStore {
     await writeTextAtomic(this.questionsFile, this.renderQuestionsMd(state));
     await writeTextAtomic(this.recommendationsFile, this.renderRecommendationsMd(state));
     await writeTextAtomic(this.decisionsFile, this.renderDecisionsMd(state));
+    await writeCanvas(state, this.config).catch(() => {
+      // Canvas — витрина, состояние важнее
+    });
   }
 
   async recordArtifact(step: State["step"], content: string): Promise<State> {
@@ -344,7 +348,7 @@ export class StateStore {
       board.createCard({
         title: `STEP ${String(step.number).padStart(2, "0")}: ${step.title}`,
         description: state.artifacts[stepId] ?? "Артефакт ещё не создан.",
-        column: step.kaitenColumn,
+        column: step.boardColumn,
         lane: step.owner === "captain" ? "Captain" : step.owner === "developer" ? "Developer" : "Both",
         externalId: `aillix:step:${String(step.number).padStart(2, "0")}`,
       }),
@@ -362,7 +366,7 @@ export class StateStore {
       await this.boardCall((board) =>
         board.updateCard(cardId, {
           description: content.slice(0, 6000),
-          column: stepById(stepId).kaitenColumn,
+          column: stepById(stepId).boardColumn,
         }),
       );
       await this.boardCall((board) =>

@@ -8,22 +8,6 @@
   ],
   "mcp": {
     "servers": {
-      "kaiten": {
-        "type": "local",
-        "command": ["node", "dist/mcp/server.js"],
-        "environment": {
-          "KAITEN_API_URL": "{env:KAITEN_API_URL}",
-          "KAITEN_API_TOKEN": "{env:KAITEN_API_TOKEN}",
-          "KAITEN_BOARD_ID": "{env:KAITEN_BOARD_ID}",
-          "KAITEN_READ_ONLY": "{env:KAITEN_READ_ONLY}"
-        },
-        "codemode": true,
-        "timeout": {
-          "startup": 30000,
-          "catalog": 30000,
-          "execution": 60000
-        }
-      },
       "t-invest": {
         "type": "remote",
         "url": "{env:T_INVEST_MCP_URL}",
@@ -40,13 +24,7 @@
     }
   },
   "permissions": [
-    { "action": "kaiten_*", "resource": "*", "effect": "allow" },
     { "action": "t_invest_*", "resource": "*", "effect": "allow" },
-    { "action": "kaiten_create_card", "resource": "*", "effect": "ask" },
-    { "action": "kaiten_update_card", "resource": "*", "effect": "ask" },
-    { "action": "kaiten_move_card", "resource": "*", "effect": "ask" },
-    { "action": "kaiten_add_comment", "resource": "*", "effect": "ask" },
-    { "action": "kaiten_delete_card", "resource": "*", "effect": "deny" },
     { "action": "hackathon_decide", "resource": "*", "effect": "ask" },
     { "action": "hackathon_init", "resource": "*", "effect": "ask" },
     { "action": "hackathon_question", "resource": "*", "effect": "ask" },
@@ -56,6 +34,7 @@
     { "action": "edit", "resource": "state/**", "effect": "allow" },
     { "action": "edit", "resource": "card/**", "effect": "allow" },
     { "action": "edit", "resource": "KANBAN.md", "effect": "allow" },
+    { "action": "edit", "resource": "../board/**", "effect": "allow" },
     { "action": "edit", "resource": ".env", "effect": "deny" },
     { "action": "shell", "resource": "*", "effect": "deny" }
   ]

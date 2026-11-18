@@ -8,14 +8,12 @@
 cd /opt/aillix-agent
 cp .env.example .env
 chmod 600 .env
-# заполнить KAITEN_API_URL, KAITEN_API_TOKEN, KAITEN_BOARD_ID
+# заполнить T_INVEST_TOKEN, если есть
 npm install
 npm run build
 npm test
+npm run smoke
 chmod +x start.sh
-npm run setup:kaiten -- --dry-run
-npm run setup:kaiten
-npm run seed
 ```
 
 ### Windows
@@ -23,26 +21,24 @@ npm run seed
 ```powershell
 cd D:\Invest-Premarket\agent
 copy .env.example .env
-# заполнить KAITEN_API_URL, KAITEN_API_TOKEN, KAITEN_BOARD_ID
+# заполнить T_INVEST_TOKEN, если есть
 npm install
 npm run build
 npm test
-npm run setup:kaiten -- --dry-run
-npm run setup:kaiten
-npm run seed
+npm run smoke
 ```
 
 Проверить:
 
-- `npm run seed` — «Все колонки Aillix на месте»;
-- `npm run smoke` — Kaiten отвечает;
-- `node dist/mcp/server.js` запускается без ошибок;
-- `/mcps` показывает Kaiten и T-Invest;
+- `npm run smoke` — доска, `KANBAN.md` и Canvas на месте;
+- `/mcps` показывает T-Invest;
 - Console открывается на `http://127.0.0.1:8787`;
 - токен не попал в Git и логи;
 - OpenCode Go подключён: `/connect` → API key → `/models`;
 - сертификаты Минцифры установлены;
 - `npm run smoke:tinvest` проходит TLS и токен;
+- Obsidian открывает `board/KANBAN.md` как Kanban;
+- `board/AILLIX_CANVAS.canvas` открывается как Canvas;
 - `ssh -T git@github-agent` и `ssh -T git@github-hack` отвечают;
 - `git remote -v` в агенте и Work указывает на разные аккаунты.
 
@@ -54,8 +50,11 @@ npm run seed
 2. Открыть OpenCode.
 3. Проверить `/hackathon status`.
 4. Открыть Console.
-5. Проверить доску: `hackathon_sync` или `/hackathon sync`.
-6. Убедиться, что `STATE.json` создан.
+5. Открыть Obsidian: `board/KANBAN.md` и `board/AILLIX_CANVAS.canvas`.
+6. Проверить доску: `hackathon_sync` или `/hackathon sync`.
+7. Убедиться, что `STATE.json` создан.
+
+Доска односторонняя: не двигайте карточки в Obsidian во время работы агента.
 
 ## 3. Запуск
 
@@ -82,7 +81,7 @@ npm run seed
 - не больше 3 за шаг;
 - блокирующий вопрос останавливает шаг;
 - ответ фиксируется в `DECISIONS.md`;
-- карточка вопроса закрывается в Kaiten или `KANBAN.md`.
+- карточка вопроса закрывается в `Questions`.
 
 ## 6. Рекомендации
 
@@ -112,13 +111,13 @@ npm run seed
 | 20:00 | отправка |
 | 22:00 | крайний срок |
 
-## 9. Если Kaiten недоступен
+## 9. Если Obsidian недоступен
 
-1. `BOARD_BACKEND=local`.
-2. Перезапустить.
-3. Работать в `KANBAN.md`.
-4. Console покажет локальную доску.
-5. Синхронизировать Kaiten позже, если доступ появится.
+1. `KANBAN.md` остаётся обычным markdown.
+2. Открыть его в любом редакторе.
+3. Canvas пересобрать: `npm run canvas`.
+4. Console показывает доску.
+5. Продолжать без Obsidian, state не теряется.
 
 ## 10. Если LLM недоступен
 
@@ -138,5 +137,5 @@ npm run seed
 
 - карточка отправлена;
 - подтверждение сохранено;
-- бэкап `state/` и `card/`;
+- бэкап `state/`, `card/`, `board/`;
 - дебриф: 3 что сработало, 3 что улучшить.

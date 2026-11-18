@@ -9,7 +9,7 @@ const dirs: string[] = [];
 async function setup() {
   const project = await mkdtemp(path.join(os.tmpdir(), "aillix-local-"));
   dirs.push(project);
-  const board = new LocalBoard(path.join(project, "state"), project);
+  const board = new LocalBoard(path.join(project, "state"), path.join(project, "KANBAN.md"));
   return { project, board };
 }
 
@@ -35,6 +35,7 @@ describe("LocalBoard", () => {
     const cards = await board.listCards();
     expect(cards[0].column).toBe("03 Options");
     const md = await readFile(path.join(project, "KANBAN.md"), "utf8");
+    expect(md).toContain("kanban-plugin: board");
     expect(md).toContain("STEP 01: Intake");
     expect(md).toContain("Проверено");
   });

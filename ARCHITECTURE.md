@@ -8,10 +8,9 @@ OpenCode
   │   ├── hackathon_* tools
   │   ├── state machine
   │   ├── HITL / permissions
-  │   ├── Kaiten / local board
+  │   ├── Obsidian Kanban / Canvas
   │   └── Console HTTP server
   ├── MCP servers
-  │   ├── kaiten (local)
   │   └── t-invest (remote sandbox)
   ├── agents
   │   ├── hackathon
@@ -30,7 +29,7 @@ OpenCode
   → captain / developer / reviewer
   → артефакт шага
   → STATE.json
-  → Kaiten или KANBAN.md
+  → KANBAN.md + AILLIX_CANVAS.canvas
   → Console
   → человек
   → решение
@@ -62,13 +61,16 @@ OpenCode
 
 ## 5. Доска
 
-- Kaiten: `GET /boards/{id}`, `POST /cards`, `PATCH /cards/{id}`, `POST /cards/{id}/comments`.
-- Local: `state/local-board.json` → `KANBAN.md`.
+- Источник истины: `state/STATE.json` и `state/local-board.json`.
+- Витрина: `board/KANBAN.md` с frontmatter `kanban-plugin: board`.
+- Карта: `board/AILLIX_CANVAS.canvas`, генерируется из state.
 - `external_id = aillix:step:NN` защищает от дублей.
 - `Questions` — отдельная колонка.
 - `10 Card` — финальная карточка.
 - `11 HITL` — человек.
 - `12 Done` — только после человека.
+- Доска односторонняя: агент пишет, человек читает. Ручные правки будут перезаписаны.
+- Формат Kanban и Canvas проверяется на тестовом дне 19.11.
 
 ## 6. T-Invest MCP
 
@@ -107,11 +109,14 @@ state/
   local-board.json
 card/
   CARD.md
+board/
+  KANBAN.md
+  AILLIX_CANVAS.canvas
 ```
 
 ## 9. Безопасность
 
-- токен Kaiten и T-Invest только в `.env`;
+- токен T-Invest только в `.env`;
 - T-Invest token read-only, sandbox;
 - сертификаты Минцифры установлены;
 - Console только локально;

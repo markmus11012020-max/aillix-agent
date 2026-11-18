@@ -24,7 +24,7 @@ export const STEPS: StepDefinition[] = [
     title: "Задача и рамки",
     owner: "captain",
     artifact: "01_intake.md",
-    kaitenColumn: "01 Intake",
+    boardColumn: "01 Intake",
     timeLimitMin: 30,
     gate: [
       "задание записано дословно",
@@ -41,7 +41,7 @@ export const STEPS: StepDefinition[] = [
     title: "Пользователь и проблема",
     owner: "captain",
     artifact: "02_user.md",
-    kaitenColumn: "02 User",
+    boardColumn: "02 User",
     timeLimitMin: 30,
     gate: [
       "три сегмента описаны",
@@ -58,7 +58,7 @@ export const STEPS: StepDefinition[] = [
     title: "Три варианта",
     owner: "captain",
     artifact: "03_options.md",
-    kaitenColumn: "03 Options",
+    boardColumn: "03 Options",
     timeLimitMin: 45,
     gate: [
       "три варианта из разных классов",
@@ -75,7 +75,7 @@ export const STEPS: StepDefinition[] = [
     title: "Сравнение и выбор",
     owner: "captain",
     artifact: "04_compare.md",
-    kaitenColumn: "04 Compare",
+    boardColumn: "04 Compare",
     timeLimitMin: 45,
     gate: [
       "матрица заполнена",
@@ -92,7 +92,7 @@ export const STEPS: StepDefinition[] = [
     title: "Ценность и сценарий",
     owner: "captain",
     artifact: "05_value.md",
-    kaitenColumn: "05 Value",
+    boardColumn: "05 Value",
     timeLimitMin: 40,
     gate: [
       "ценностное предложение в одном предложении",
@@ -109,7 +109,7 @@ export const STEPS: StepDefinition[] = [
     title: "AI, T-Invest MCP, HITL",
     owner: "developer",
     artifact: "06_ai_mcp.md",
-    kaitenColumn: "06 AI/MCP",
+    boardColumn: "06 AI/MCP",
     timeLimitMin: 50,
     gate: [
       "AI и код разделены",
@@ -127,7 +127,7 @@ export const STEPS: StepDefinition[] = [
     title: "MVP и ценность",
     owner: "developer",
     artifact: "07_mvp.md",
-    kaitenColumn: "07 MVP",
+    boardColumn: "07 MVP",
     timeLimitMin: 30,
     gate: [
       "must-have не больше 5",
@@ -144,7 +144,7 @@ export const STEPS: StepDefinition[] = [
     title: "Архитектура и риски",
     owner: "developer",
     artifact: "08_architecture.md",
-    kaitenColumn: "08 Arch/Risks",
+    boardColumn: "08 Arch/Risks",
     timeLimitMin: 40,
     gate: [
       "компонентов не больше 7",
@@ -162,7 +162,7 @@ export const STEPS: StepDefinition[] = [
     title: "План MVP",
     owner: "developer",
     artifact: "09_plan.md",
-    kaitenColumn: "09 Plan",
+    boardColumn: "09 Plan",
     timeLimitMin: 30,
     gate: [
       "даты 23.11–03.12",
@@ -180,7 +180,7 @@ export const STEPS: StepDefinition[] = [
     title: "Сборка карточки",
     owner: "orchestrator",
     artifact: "10_card.md",
-    kaitenColumn: "10 Card",
+    boardColumn: "10 Card",
     timeLimitMin: 40,
     gate: [
       "6 блоков",
@@ -198,7 +198,7 @@ export const STEPS: StepDefinition[] = [
     title: "Красная команда и финал",
     owner: "reviewer",
     artifact: "11_red_team.md",
-    kaitenColumn: "11 HITL",
+    boardColumn: "11 HITL",
     timeLimitMin: 40,
     gate: [
       "нет blocker",
@@ -285,7 +285,7 @@ export const StateSchema = z.object({
   recommendations: z.array(RecommendationSchema),
   decisions: z.array(DecisionSchema),
   board: z.object({
-    backend: z.enum(["kaiten", "local"]),
+    backend: z.literal("local"),
     cards: z.record(z.string()),
     finalCardId: z.string().optional(),
   }),

@@ -25,8 +25,7 @@ if [ -f .env ]; then
   . ./.env
   set +a
 else
-  export BOARD_BACKEND=local
-  echo "Файл .env не найден. Будет использована локальная доска KANBAN.md."
+  echo "Файл .env не найден. Доска: KANBAN.md."
 fi
 
 CERT_BUNDLE="${T_INVEST_CA_BUNDLE:-$HOME/certs/russian-trusted.pem}"
@@ -48,6 +47,8 @@ if ! command -v opencode >/dev/null 2>&1; then
 fi
 
 echo ""
+echo "Доска: ${BOARD_FILE:-../board/KANBAN.md}"
+echo "Canvas: ${CANVAS_FILE:-../board/AILLIX_CANVAS.canvas}"
 echo "Aillix Console: http://127.0.0.1:${UI_PORT:-8787}"
 echo "Запуск OpenCode..."
 exec opencode

@@ -1,5 +1,5 @@
 import { Plugin } from "@opencode/plugin";
-import { createBoardWithFallback } from "../board/factory.js";
+import { createBoard } from "../board/factory.js";
 import { loadConfig } from "../config.js";
 import { StateStore } from "../state/store.js";
 import { startUiServer } from "../ui/server.js";
@@ -10,7 +10,7 @@ export default Plugin.define({
   async setup(ctx) {
     console.error("Aillix plugin: setup start");
     const config = loadConfig({ projectRoot: ctx.location.directory });
-    const board = await createBoardWithFallback(config);
+    const board = createBoard(config);
     console.error(`Aillix plugin: board ${board.kind}`);
     const store = new StateStore(config, board);
 
@@ -52,6 +52,8 @@ export default Plugin.define({
             `Владелец: ${dashboard.owner}`,
             `Статус: ${dashboard.status}`,
             `Прошло: ${dashboard.elapsedMin} мин; до дедлайна: ${dashboard.remainingMin} мин`,
+            `Доска: ${config.boardFile}`,
+            `Canvas: ${config.canvasFile}`,
             `Вопросы: ${dashboard.openQuestions}; блокирующих: ${dashboard.blockingQuestions}`,
             `Рекомендации ждут решения: ${dashboard.proposedRecommendations}`,
             dashboard.blockers.length ? `Блокеры: ${dashboard.blockers.join("; ")}` : "Блокеров нет.",

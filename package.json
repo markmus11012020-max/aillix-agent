@@ -1,6 +1,6 @@
 {
   "name": "aillix-agent",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "description": "Aillix Agent — очный агент для второго этапа: процесс, карточки, HITL.",
@@ -11,14 +11,11 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsx src/plugin/index.ts",
-    "mcp": "tsx src/mcp/server.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "smoke": "tsx scripts/smoke-kaiten.ts",
+    "smoke": "tsx scripts/smoke-board.ts",
     "smoke:tinvest": "tsx scripts/smoke-tinvest.ts",
-    "discover:kaiten": "tsx scripts/discover-kaiten.ts",
-    "setup:kaiten": "tsx scripts/setup-kaiten.ts",
-    "seed": "tsx scripts/seed-board.ts",
+    "canvas": "tsx scripts/render-canvas.ts",
     "start": "powershell -ExecutionPolicy Bypass -File ./start.ps1",
     "start:windows": "powershell -ExecutionPolicy Bypass -File ./start.ps1",
     "start:linux": "bash ./start.sh"
