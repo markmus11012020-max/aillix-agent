@@ -285,7 +285,7 @@ export const StateSchema = z.object({
   recommendations: z.array(RecommendationSchema),
   decisions: z.array(DecisionSchema),
   board: z.object({
-    backend: z.literal("local"),
+    backend: z.preprocess((value) => (value === "kaiten" ? "local" : value), z.literal("local")),
     cards: z.record(z.string()),
     finalCardId: z.string().optional(),
   }),
