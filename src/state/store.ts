@@ -22,6 +22,7 @@ import {
   proposedRecommendations,
 } from "./protocol.js";
 import { advance, dashboard, gateReport } from "./machine.js";
+import { readLimits } from "./limits.js";
 import { writeCanvas } from "../board/canvas.js";
 import { getTimeStatus, timeWarning } from "./time.js";
 import { ensureDir, readJson, readText, writeJsonAtomic, writeTextAtomic } from "../utils/fs.js";
@@ -302,7 +303,9 @@ export class StateStore {
 
   async cardContext(): Promise<{ template: string; artifacts: string; prompt: string }> {
     const state = await this.get();
-    const template = await readText(path.join(this.templatesDir, "card.md")).catch(() => "");
+    const limit = readLimits(this.config.stateDir).cardLimit ?? this.config.cardLimit;
+    const template = (await readText(path.join(this.templatesDir, "card.md")).catch(() => ""))
+      .replaceAll("{{CARD_LIMIT}}", String(limit));
     const artifacts = STEPS.map((step) => {
       const content = state.artifacts[step.id] ?? "_нет артефакта_";
       return `## ${step.number}. ${step.title}\n\n${content}`;

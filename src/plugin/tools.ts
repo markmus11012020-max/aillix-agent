@@ -1,7 +1,9 @@
 import { Plugin } from "@opencode/plugin";
 import { lintCard } from "../card/lint.js";
 import type { AppConfig } from "../config.js";
+import { gitCommit, gitInit, gitPush, gitStatus, readWorkdir, writeWorkdir } from "../git/repo.js";
 import { gateReport } from "../state/machine.js";
+import { readLimits, writeLimits } from "../state/limits.js";
 import { STEPS, stepById, type State } from "../state/schema.js";
 import type { StateStore } from "../state/store.js";
 
@@ -168,7 +170,14 @@ export async function registerHackathonTools(ctx: Ctx, store: StateStore, config
       options: { namespace: "hackathon", codemode: true },
       execute: async (input) => {
         const { step, content } = input as { step: State["step"]; content: string };
-        const state = await store.recordArtifact(step, content);
+        const limits = readLimits(config.stateDir);
+        if (limits.stepLimit && content.length > limits.stepLimit) {
+          return text(
+            `Артефакт не записан: ${content.length} символов > STEP_LIMIT ${limits.stepLimit}. ` +
+              "Сократите текст и повторите hackathon_record.",
+          );
+        }
+        await store.recordArtifact(step, content);
         return text(`Артефакт шага ${step} записан. Длина: ${content.length} символов.`);
       },
     });
@@ -292,7 +301,8 @@ export async function registerHackathonTools(ctx: Ctx, store: StateStore, config
       execute: async () => {
         const card = await store.readCard();
         if (!card.trim()) return text("Карточка не найдена. Сначала соберите card/CARD.md.");
-        return text(lintCard(card, { limit: config.cardLimit }));
+        const limit = readLimits(config.stateDir).cardLimit ?? config.cardLimit;
+        return text(lintCard(card, { limit }));
       },
     });
 
@@ -329,6 +339,104 @@ export async function registerHackathonTools(ctx: Ctx, store: StateStore, config
         });
         const state = await store.submit();
         return text(`Карточка переведена в Done. Статус: ${state.status}.`);
+      },
+    });
+
+    editor.add({
+      name: "limits",
+      description: "Зафиксировать лимиты символов, полученные от команды.",
+      input: obj({
+        cardLimit: { type: "number", description: "Лимит финальной карточки." },
+        stepLimit: { type: "number", description: "Лимит артефакта шага; 0 или пусто — без лимита." },
+      }),
+      options: { namespace: "hackathon", codemode: true },
+      execute: async (input, context) => {
+        await ctx.permission.assert({
+          sessionID: context.sessionID,
+          agent: context.agent,
+          action: "hackathon_limits",
+          resources: ["state"],
+          save: [],
+        });
+        const data = input as { cardLimit?: number; stepLimit?: number };
+        const limits = await writeLimits(config.stateDir, data);
+        return text({
+          cardLimit: limits.cardLimit ?? null,
+          stepLimit: limits.stepLimit ?? null,
+          note: limits.cardLimit ? "Лимиты сохранены." : "Лимит карточки не задан — ПРОВЕРИТЬ.",
+        });
+      },
+    });
+
+    editor.add({
+      name: "workdir",
+      description: "Зарегистрировать папку Работы внутри /work/hackathon и URL репозитория.",
+      input: obj(
+        {
+          path: { type: "string", description: "Абсолютный путь к папке Работы." },
+          repoUrl: { type: "string", description: "URL пустого GitHub-репозитория." },
+        },
+        ["path"],
+      ),
+      options: { namespace: "hackathon", codemode: true },
+      execute: async (input, context) => {
+        await ctx.permission.assert({
+          sessionID: context.sessionID,
+          agent: context.agent,
+          action: "hackathon_workdir",
+          resources: ["state"],
+          save: [],
+        });
+        const data = input as { path: string; repoUrl?: string };
+        const record = await writeWorkdir(config.stateDir, data.path, data.repoUrl);
+        return text(record);
+      },
+    });
+
+    editor.add({
+      name: "git",
+      description:
+        "Дисциплинированные git-операции только в папке Работы внутри /work/hackathon: status, init, commit, push.",
+      input: obj(
+        {
+          action: { type: "string", enum: ["status", "init", "commit", "push"] },
+          workdir: { type: "string", description: "Абсолютный путь; если пусто — из state/workdir.json." },
+          repoUrl: { type: "string", description: "URL пустого GitHub-репозитория для init." },
+          message: { type: "string", description: "Сообщение коммита." },
+        },
+        ["action"],
+      ),
+      options: { namespace: "hackathon", codemode: true },
+      execute: async (input, context) => {
+        const data = input as {
+          action: "status" | "init" | "commit" | "push";
+          workdir?: string;
+          repoUrl?: string;
+          message?: string;
+        };
+
+        await ctx.permission.assert({
+          sessionID: context.sessionID,
+          agent: context.agent,
+          action: "hackathon_git",
+          resources: [data.action],
+          save: [],
+        });
+
+        const workdir = data.workdir ?? (await readWorkdir(config.stateDir));
+
+        if (data.action === "status") {
+          return text(await gitStatus(workdir));
+        }
+        if (data.action === "init") {
+          return text(await gitInit(workdir, data.repoUrl));
+        }
+        if (data.action === "commit") {
+          const message = data.message?.trim();
+          if (!message) throw new Error("Для коммита нужно сообщение.");
+          return text(await gitCommit(workdir, message));
+        }
+        return text(await gitPush(workdir));
       },
     });
   });

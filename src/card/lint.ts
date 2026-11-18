@@ -77,6 +77,15 @@ export function lintCard(text: string, options: LintOptions): LintResult {
   if (/Bearer\s+[A-Za-z0-9._-]+|API_TOKEN\s*=/i.test(normalized)) {
     errors.push({ code: "secret", message: "Похоже на токен или ключ." });
   }
+  if (/<\/?[a-z][^>]*>/i.test(normalized)) {
+    errors.push({ code: "html", message: "В карточке есть HTML-разметка." });
+  }
+  if (/https?:\/\//i.test(normalized)) {
+    errors.push({ code: "url", message: "В карточке есть внешняя ссылка — удалить или проверить." });
+  }
+  if (/(игнорируй|ignore)\s+(предыдущ|previous|инструкц|instructions)|system\s+prompt/i.test(normalized)) {
+    errors.push({ code: "injection", message: "Похоже на prompt injection в тексте карточки." });
+  }
   if (/^#{1,6}\s/m.test(normalized) || /```/.test(normalized)) {
     errors.push({ code: "markdown", message: "В карточке есть markdown-заголовки или блоки кода." });
   }

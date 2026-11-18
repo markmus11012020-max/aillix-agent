@@ -15,6 +15,7 @@
     "test:watch": "vitest",
     "smoke": "tsx scripts/smoke-board.ts",
     "smoke:tinvest": "tsx scripts/smoke-tinvest.ts",
+    "mock:tinvest": "tsx scripts/mock-tinvest-mcp.ts",
     "canvas": "tsx scripts/render-canvas.ts",
     "start": "powershell -ExecutionPolicy Bypass -File ./start.ps1",
     "start:windows": "powershell -ExecutionPolicy Bypass -File ./start.ps1",
