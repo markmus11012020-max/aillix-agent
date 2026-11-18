@@ -18,7 +18,7 @@
 ```
 
 - Код агента не попадает в Работу.
-- OpenCode Go подключается один раз на ноутбуке.
+- Глобально Ollama; в проекте `agent` — OpenCode Go DeepSeek V4.1 Flash.
 - T-Invest MCP — sandbox и read-only токен.
 - Без интернета работают state, Console и локальная доска.
 - Всё работает на ноутбуке.
@@ -207,36 +207,99 @@ npm run smoke:tinvest
 После запуска OpenCode откройте `/mcps` и проверьте `t-invest`.
 Если CLI показывает пусто, ориентируйтесь на `/mcps` в TUI.
 
-## 7. Подключение OpenCode Go
+## 7. Модель: Ollama глобально, OpenCode Go в проекте
 
-1. Откройте TUI:
+На боевом Linux глобальная модель OpenCode — локальная Ollama.
+В проекте `agent` модель задана явно:
+
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode-go/deepseek-v4.1-flash",
+  "default_agent": "hackathon"
+}
+```
+
+То есть `/opt/aillix-agent` использует OpenCode Go и
+DeepSeek V4.1 Flash 1017, даже если глобально стоит Ollama.
+
+1. Проверьте подключение OpenCode Go:
+
+```bash
+opencode auth list
+```
+
+Должно быть `OpenCode Go ... stored`.
+
+2. Откройте OpenCode:
 
 ```bash
 cd /opt/aillix-agent
 opencode
 ```
 
-2. Выполните:
-
-```text
-/connect
-```
-
-3. Выберите **OpenCode Go**.
-4. Вставьте API key из `https://opencode.ai/console`.
-5. Выберите модель:
+3. Выберите модель:
 
 ```text
 /models
 ```
 
-6. Проверьте:
+В статус-баре должно быть `deepseek-v4.1-flash`, а не `*-free`.
+
+4. Проверьте ответ:
 
 ```text
 Ответь одним словом: тест.
 ```
 
-Если ответ есть — модель работает. Агент наследует модель сессии. Отдельный LLM-ключ в `agent/.env` не нужен.
+Если аккаунта OpenCode Go нет — один раз:
+
+```text
+/connect
+```
+
+Выбрать OpenCode Go, вставить API key. Ключ сохраняется в базе
+OpenCode, не в проекте; повторять для каждой папки не нужно.
+
+Если новая папка всё равно просит подключение:
+
+- проверить `opencode auth list`;
+- проверить `opencode service status`;
+- проверить `XDG_DATA_HOME` и `OPENCODE_DB`;
+- проверить, нет ли в папке своего `opencode.jsonc`.
+
+Подробно: `OPENCODE_GO.md`.
+
+### 7.1. Ollama как резерв
+
+Проверьте Ollama:
+
+```bash
+ollama list
+ollama ps
+```
+
+Если сервис не запущен:
+
+```bash
+ollama serve
+```
+
+Если модели нет:
+
+```bash
+ollama pull <model>
+```
+
+В `/models` выбрать `ollama/<model>`.
+
+Практика:
+
+- локальная модель медленнее облачной;
+- держите Ollama запущенной;
+- не запускайте несколько тяжёлых задач параллельно;
+- заложите +20–30% времени к таймингу;
+- если Ollama недоступна — OpenCode Go или ручные шаблоны.
 
 ## 8. Запуск агента
 
@@ -489,9 +552,9 @@ npm run smoke
 - Отдельный пользователь или каталог для агента.
 - `.env` с `chmod 600`.
 - Токены не в Git, не в карточке, не на скриншотах.
-- OpenCode Go key хранится в OpenCode, не в проекте.
+- OpenCode Go key хранится в OpenCode, не в проекте; если используется Ollama, ключ не нужен.
 - T-Invest token — read-only, sandbox.
-- После хакатона отозвать T-Invest-токен и ротировать OpenCode Go key.
+- После хакатона отозвать T-Invest-токен и ротировать OpenCode Go key, если он использовался.
 - При необходимости удалить `/opt/aillix-agent` и затереть свободное место.
 - Всё работает на ноутбуке.
 
@@ -523,8 +586,10 @@ npm run smoke
 - [ ] Node.js 20+ и npm работают.
 - [ ] OpenCode установлен, `opencode --version` отвечает.
 - [ ] Сертификаты Минцифры установлены, TLS проверен.
-- [ ] `/connect` → OpenCode Go → API key.
-- [ ] `/models` → модель выбрана.
+- [ ] `opencode auth list` — OpenCode Go.
+- [ ] `/models` → `opencode-go/deepseek-v4.1-flash`.
+- [ ] Если Ollama: `ollama list`, `ollama ps`, тестовый ответ.
+- [ ] Если OpenCode Go: `/connect`, API key, тестовый ответ.
 - [ ] Тестовый ответ LLM получен.
 - [ ] T-Invest MCP: `npm run smoke:tinvest`.
 - [ ] Агент собран: `npm run build`.
@@ -546,8 +611,10 @@ npm run smoke
 | `opencode: command not found` | Добавить `$HOME/.opencode/bin` в PATH |
 | `node: command not found` | Установить Node через nvm |
 | TLS-ошибка T-Invest | Установить сертификаты Минцифры, проверить `NODE_EXTRA_CA_CERTS` |
-| `/connect` не показывает OpenCode Go | Проверить подписку и API key в console |
-| `Model unavailable` | `/models`, выбрать доступную модель |
+| `/connect` не показывает OpenCode Go | Проверить подписку и API key в console; или использовать Ollama |
+| Каждая папка просит `/connect` | `opencode auth list`, `opencode service status`, проверить `OPENCODE_DB` и проектный `opencode.jsonc` |
+| Ollama не отвечает | `ollama serve`, `ollama list`, `ollama ps` |
+| `Model unavailable` | `/models`, выбрать доступную локальную или облачную модель |
 | `t-invest` не подключён | Проверить `T_INVEST_MCP_URL`, токен, сертификаты |
 | MCP not connected | `/mcps`, проверить T-Invest токен и сертификаты |
 | Плагин не загрузился | Проверить `.opencode/plugins/aillix.js` и `npm run build` |

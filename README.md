@@ -21,7 +21,7 @@ Aillix Agent — очный агент для второго этапа. Упр�
 | Команды | `/hackathon start`, `next`, `status`, `card`, `check`, `sync`, `question`, `decision`, `submit` |
 | Локальная доска | `KANBAN.md` в vault Obsidian |
 | Тесты | state, protocol, local board, card/lint |
-| Документация | README, RUNBOOK, ARCHITECTURE, OBSIDIAN, SECURITY |
+| Документация | README, RUNBOOK, ARCHITECTURE, OBSIDIAN, OPENCODE_GO, SECURITY |
 
 ## 2. Что агент не делает
 
@@ -67,14 +67,24 @@ npm run smoke
 
 Console: `http://127.0.0.1:8787`.
 
-Перед первым запуском агента подключите модель:
+В проекте уже задана модель:
+
+```text
+opencode-go/deepseek-v4.1-flash
+```
+
+Она прописана в `opencode.jsonc`. На боевом Linux глобально может
+стоять Ollama — проект использует OpenCode Go.
+
+Проверка:
 
 ```text
 opencode
-/connect
-# OpenCode Go → API key
 /models
 ```
+
+`opencode auth list` должен показывать OpenCode Go.
+Подробно: `OPENCODE_GO.md`.
 
 Подробный Linux-план: `LINUX.md`.
 
@@ -471,6 +481,7 @@ agent/
   RUNBOOK.md
   ARCHITECTURE.md
   OBSIDIAN.md
+  OPENCODE_GO.md
   SECURITY.md
   src/
     board/

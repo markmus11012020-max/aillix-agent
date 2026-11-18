@@ -20,7 +20,9 @@
 - [ ] `agent/.env` заполнен: `BOARD_FILE`, `CANVAS_FILE`.
 - [ ] `T_INVEST_TOKEN` — read-only sandbox, если есть. Если нет — статус «ПРОВЕРИТЬ».
 - [ ] Сертификаты Минцифры установлены.
-- [ ] OpenCode Go подключён: `/connect` → API key → `/models`.
+- [ ] `opencode auth list` показывает OpenCode Go.
+- [ ] В проекте `agent` выбрана модель `opencode-go/deepseek-v4.1-flash`.
+- [ ] Если Go недоступен: Ollama, `ollama list` и `ollama ps`.
 - [ ] В OpenCode выбрана рабочая модель, а не `*-free` по умолчанию.
 - [ ] Obsidian установлен, плагин Kanban включён.
 - [ ] Vault `D:\Invest-Premarket\board` открыт.
@@ -51,7 +53,7 @@ npm run smoke
 Проверить:
 
 - `t-invest` — connected или «ПРОВЕРИТЬ»;
-- модель в статус-баре — нужная, не `*-free`;
+- модель в статус-баре — `deepseek-v4.1-flash`, не `*-free`;
 - Console открывается на `http://127.0.0.1:8787`;
 - Obsidian открывает `board/KANBAN.md` как Kanban;
 - `board/AILLIX_CANVAS.canvas` открывается как Canvas.
@@ -78,6 +80,7 @@ npm run smoke
 
 Правило: пока есть открытый блокирующий вопрос, шаг не двигается.
 Правило: агент рекомендует, капитан решает.
+Правило: если работаете на Ollama, заложить +20–30% времени.
 
 ## 5. Тайминг
 

@@ -7,7 +7,10 @@
 - Canvas `AILLIX_CANVAS.canvas` генерируется из state.
 - `npm run smoke` проверяет локальную доску.
 - `npm run canvas` пересобирает карту.
+- На боевом Linux модель по умолчанию — локальная Ollama.
+- В проекте `agent` задана модель `opencode-go/deepseek-v4.1-flash`.
 - Добавлен `OBSIDIAN.md`.
+- Добавлен `OPENCODE_GO.md`.
 
 ## 1.0.0
 

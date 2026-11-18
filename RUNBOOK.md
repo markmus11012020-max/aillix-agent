@@ -34,7 +34,9 @@ npm run smoke
 - `/mcps` показывает T-Invest;
 - Console открывается на `http://127.0.0.1:8787`;
 - токен не попал в Git и логи;
-- OpenCode Go подключён: `/connect` → API key → `/models`;
+- `opencode auth list` показывает OpenCode Go;
+- в проекте выбрана `opencode-go/deepseek-v4.1-flash`;
+- если Go недоступен: `ollama list`, `ollama ps`, модель Ollama;
 - сертификаты Минцифры установлены;
 - `npm run smoke:tinvest` проходит TLS и токен;
 - Obsidian открывает `board/KANBAN.md` как Kanban;
